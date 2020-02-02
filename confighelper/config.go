@@ -1,25 +1,38 @@
 package confighelper
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
-
-	"github.com/tkanos/gonfig"
 )
 
 type Configuration struct {
-	Port              int
-	Static_Variable   string
-	Connection_String string
+	Port              int    `json:"Port"`
+	Static_Variable   string `json:"Static_Variable"`
+	Connection_String string `json:"Connection_String"`
 }
 
 func GetConfiguration() Configuration {
-	basePath, err := os.Getwd()
-	configuration := Configuration{}
-	err = gonfig.GetConf(basePath+"/confighelper/config.json", &configuration)
-	log.Fatal(err)
-	fmt.Println(configuration)
 
+	configuration := Configuration{}
+
+	dir, err := os.Getwd()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(dir)
+	content, err := ioutil.ReadFile(dir + "/confighelper/config.json")
+	if err != nil {
+		log.Fatal("===>", err)
+	}
+	fmt.Println(content)
+	err1 := json.Unmarshal(content, &configuration)
+	if err1 != nil {
+
+		log.Fatal("errrr==============>", err1)
+	}
+	fmt.Println("configuration struct", configuration)
 	return configuration
 }
